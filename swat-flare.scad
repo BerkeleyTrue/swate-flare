@@ -67,19 +67,22 @@ module flareMount() {
     }
 }
 
+module flareBaseShape() {
+  difference() {
+    square([11.8, 8.8]);
+
+    translate([-0.1, 2])
+      square([3.1, 4.8]);
+
+    translate([8.9, 2])
+      square([3.1, 4.8]);
+  }
+}
 // base
 module flareBase() {
   minkowski() {
     linear_extrude(2.5) {
-      difference() {
-        square([11.8, 8.8]);
-
-        translate([-0.1, 2])
-          square([3.1, 4.8]);
-
-        translate([8.9, 2])
-          square([3.1, 4.8]);
-      }
+      flareBaseShape();
     }
 
     // camfer
@@ -87,7 +90,50 @@ module flareBase() {
   }
 }
 
-union() {
-  translate([-2.5, -0.9, 2.5]) flareMount();
-  flareBase();
+// flare mount and base
+module flare() {
+  union() {
+    translate([-2.5, -0.9, 2.5]) flareMount();
+    flareBase();
+  }
 }
+
+// swat mount
+module swatMount() {
+  union() {
+    // right bolt
+    linear_extrude(4) {
+      circle(5);
+    }
+
+    // left bolt
+    translate([60, 0, 0])
+      linear_extrude(4) {
+        circle(5);
+      }
+
+    // flare bridge
+    translate([4, 0, 0.5])
+      rotate([90, 0, 0])
+      difference() {
+        linear_extrude(2, center=true) {
+          minkowski() {
+            hull() {
+              translate([1, 0])
+                square([4, 4]);
+              translate([20.1, 5.2])
+                flareBaseShape();
+
+              translate([47.1, 0])
+                square([4, 4]);
+            }
+            circle(0.5);
+          }
+        }
+        translate([30-4, -66, 0])
+          cylinder(r=70, h=3, center=true);
+      }
+  }
+}
+
+swatMount();
