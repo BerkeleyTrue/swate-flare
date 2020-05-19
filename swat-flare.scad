@@ -123,7 +123,7 @@ flareMountY = 11;
 bcp = 60;
 
 module swatMount() {
-  bOffset=4;
+  bOffset=4.7;
   difference() {
     chainedHull() {
       // bolt hole
@@ -134,7 +134,7 @@ module swatMount() {
         ccube([2, bolthole*2+boltsupport*2, boltMountThick]);
 
       // tooth
-      chamber = 1;
+      chamber = 2;
       translate([bOffset+chamber+1, 0, -1])
         rotate([0, 30, 0])
         minkowski() {
