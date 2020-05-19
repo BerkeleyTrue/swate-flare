@@ -1,5 +1,22 @@
 $fn=50;
 
+module chainedHull() {
+  // let i be the index of each of our children, but the last one
+  union() {
+    for(i=[0:$children-2])
+      hull() {
+        // we then create a hull between child i and i+1
+        children(i); // use child() in older versions of Openscad!
+        children(i+1); // this shape is i in the next iteration!
+      }
+  }
+}
+
+module ccube(size) {
+  translate([-size[0]/2, -size[1]/2, 0])
+    cube(size);
+}
+
 module spine() {
   hull() {
     sphere(0.7);
@@ -67,9 +84,10 @@ module flareMount() {
     }
 }
 
+flareBaseSize = [11.8, 8.8];
 module flareBaseShape() {
   difference() {
-    square([11.8, 8.8]);
+    square(flareBaseSize);
 
     translate([-0.1, 2])
       square([3.1, 4.8]);
@@ -98,42 +116,89 @@ module flare() {
   }
 }
 
-// swat mount
+boltMountThick = 4;
+bolthole=5/2;
+boltsupport=2/2;
+flareMountY = 11;
+bcp = 60;
+
 module swatMount() {
-  union() {
-    // right bolt
-    linear_extrude(4) {
-      circle(5);
-    }
+  bOffset=4;
+  difference() {
+  minkowski() {
+    chainedHull() {
+      // bolt hole
+      cylinder(r=bolthole+boltsupport, h=boltMountThick);
 
-    // left bolt
-    translate([60, 0, 0])
-      linear_extrude(4) {
-        circle(5);
-      }
+      // box offset
+      translate([bOffset, 0, 0])
+        ccube([2, bolthole*2+boltsupport*2, boltMountThick]);
 
-    // flare bridge
-    translate([4, 0, 0.5])
-      rotate([90, 0, 0])
-      difference() {
-        linear_extrude(2, center=true) {
-          minkowski() {
-            hull() {
-              translate([1, 0])
-                square([4, 4]);
-              translate([20.1, 5.2])
-                flareBaseShape();
-
-              translate([47.1, 0])
-                square([4, 4]);
-            }
-            circle(0.5);
-          }
+      // tooth
+      chamber = 1;
+      translate([bOffset+chamber+1, 0, -1])
+        rotate([0, 30, 0])
+        minkowski() {
+          ccube([4, bolthole*2+boltsupport*2 - chamber*2, boltMountThick]);
+          sphere(chamber);
         }
-        translate([30-4, -66, 0])
-          cylinder(r=70, h=3, center=true);
-      }
+
+      // tab clearance
+      translate([bOffset+chamber*2+8, 0, chamber/2])
+        rotate([0, 0, 15])
+        minkowski() {
+          ccube([0.1, 5, 8]);
+          sphere(chamber);
+        }
+
+      // flare mount face
+      translate([(bcp/2)-(flareBaseSize[1]/2), flareMountY - 2, flareBaseSize[0] + 5])
+        rotate([90, 90, 0])
+        rotate([0, 10, 0])
+        linear_extrude(4) {
+          flareBaseShape();
+        }
+
+      // tab clearance
+      translate([bcp-bOffset-chamber*2-8, 0, chamber/2])
+        rotate([0, 0, -15])
+        minkowski() {
+          ccube([0.1, 5, 8]);
+          sphere(chamber);
+        }
+
+      // tooth
+      translate([bcp-bOffset-chamber-1, 0, -1])
+        rotate([0, -30, 0])
+        minkowski() {
+          ccube([4, bolthole*2+boltsupport*2 - chamber*2, boltMountThick]);
+          sphere(chamber);
+        }
+
+      // box offset
+      translate([bcp-bOffset, 0, 0])
+        ccube([2, bolthole*2+boltsupport*2,, boltMountThick]);
+
+      // bolt hole
+      translate([bcp, 0, 0])
+        cylinder(r=bolthole+boltsupport, h=boltMountThick);
+    }
+      sphere(0.5);
+    }
+    translate([0, 0, -1])
+      cylinder(r=bolthole, h=boltMountThick+2);
+    translate([bcp, 0, -1])
+      cylinder(r=bolthole, h=boltMountThick+2);
   }
 }
 
-swatMount();
+
+union() {
+  swatMount();
+
+  translate([(bcp/2)-(flareBaseSize[0]/2)+1.4, flareMountY, flareBaseSize[1] -3.9])
+  rotate([-90, -90, 0])
+  rotate([0, 10, 0])
+    flare();
+}
+
