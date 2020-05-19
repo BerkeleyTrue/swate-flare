@@ -125,7 +125,6 @@ bcp = 60;
 module swatMount() {
   bOffset=4;
   difference() {
-  minkowski() {
     chainedHull() {
       // bolt hole
       cylinder(r=bolthole+boltsupport, h=boltMountThick);
@@ -183,8 +182,8 @@ module swatMount() {
       translate([bcp, 0, 0])
         cylinder(r=bolthole+boltsupport, h=boltMountThick);
     }
-      sphere(0.5);
-    }
+
+    // bolt holes
     translate([0, 0, -1])
       cylinder(r=bolthole, h=boltMountThick+2);
     translate([bcp, 0, -1])
