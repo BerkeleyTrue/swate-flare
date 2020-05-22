@@ -26,68 +26,69 @@ module spine() {
 
 // flare mount
 module flareMount() {
-    union() {
+  union() {
+    chamfer = 0.5;
+    minkowski() {
+      // main platform
+      linear_extrude(2.25 - chamfer) {
+        difference() {
+          union() {
+            square([16.63 - chamfer, 12.5 - chamfer]);
+            translate([5.25, 10]) square([5.5 , 10.3]);
+          }
+          // cut outs
+          translate([3.57, 10]) square([1.68, 2.75]);
+          translate([10.75, 10]) square([1.68, 2.75]);
+        }
+      }
+      // camfer
+      sphere(chamfer / 2);
+    }
+
+    // spines
+    translate([2.25, 1.75, 2.25 - chamfer]) spine();
+    translate([2.25, 8.80, 2.25 - chamfer]) spine();
+
+    /* tab claw */
+    translate([10.70, 15.5, 2]) rotate([0, -90, 0])
+      linear_extrude(5.5) {
+        polygon([[0, 0], [0, 2.2], [1, 2.2]]);
+      }
+
+    // tab head
+    translate([3, 18, 1.90 - chamfer])
+      rotate([-80, 0, 0])
       minkowski() {
-        // main platform
         linear_extrude(2.25) {
-          difference() {
-            union() {
-              square([16.63, 12.5]);
-              translate([5.25, 10]) square([5.5, 10.3]);
-            }
-            // cut outs
-            translate([3.57, 10]) square([1.68, 2.75]);
-            translate([10.75, 10]) square([1.68, 2.75]);
+          intersection() {
+            square([10, 7.75]);
+            translate([5, 5])
+              circle(5.5);
           }
         }
         // camfer
-        sphere(0.25);
+        sphere(0.30);
       }
 
-      // spines
-      translate([2.25, 1.75, 2.25]) spine();
-      translate([2.25, 8.80, 2.25]) spine();
-
-      /* tab claw */
-      translate([10.70, 15.5, 2]) rotate([0, -90, 0])
-        linear_extrude(5.5) {
-          polygon([[0, 0], [0, 2.2], [1, 2.2]]);
-        }
-
-      // tab head
-      translate([3, 18, 1.80])
-        rotate([-80, 0, 0])
-        minkowski() {
-          linear_extrude(2.25) {
-            intersection() {
-              square([10, 7.75]);
-              translate([5, 5])
-                circle(5.5);
-            }
+    // tab thumb stop
+    translate([3, 19.4, -3.65 - chamfer])
+      rotate([-90, 0, 0])
+      minkowski() {
+        linear_extrude(3.5) {
+          intersection() {
+            square([10, 2.25]);
           }
-          // camfer
-          sphere(0.30);
         }
-
-      // tab thumb stop
-      translate([3, 19.4, -3.65])
-        rotate([-90, 0, 0])
-        minkowski() {
-          linear_extrude(3.5) {
-            intersection() {
-              square([10, 2.25]);
-            }
-          }
-          // camfer
-          sphere(0.30);
-        }
-    }
+        // camfer
+        sphere(0.30);
+      }
+  }
 }
 
 flareBaseSize = [11.8, 8.8];
-module flareBaseShape() {
+module flareBaseShape(chamfer = 0.6) {
   difference() {
-    square(flareBaseSize);
+    square(flareBaseSize - [chamfer, chamfer]);
 
     translate([-0.1, 2])
       square([3.1, 4.8]);
@@ -98,20 +99,22 @@ module flareBaseShape() {
 }
 // base
 module flareBase() {
+  chamfer = 0.6;
   minkowski() {
-    linear_extrude(2.5) {
-      flareBaseShape();
+    linear_extrude(2.5 - chamfer) {
+      flareBaseShape(chamfer);
     }
 
     // camfer
-    sphere(0.3);
+    sphere(chamfer / 2);
   }
 }
 
 // flare mount and base
 module flare() {
   union() {
-    translate([-2.5, -0.9, 2.5]) flareMount();
+    translate([-2.5, -0.9, 2.2])
+      flareMount();
     flareBase();
   }
 }
@@ -155,7 +158,7 @@ module swatMount() {
         rotate([90, 90, 0])
         rotate([0, 10, 0])
         linear_extrude(4) {
-          flareBaseShape();
+          flareBaseShape(0);
         }
 
       // tab clearance
@@ -195,7 +198,7 @@ module swatMount() {
 union() {
   swatMount();
 
-  translate([(bcp/2)-(flareBaseSize[0]/2)+1.4, flareMountY, flareBaseSize[1] -3.9])
+  translate([(bcp/2)-(flareBaseSize[0]/2)+1.7, flareMountY, flareBaseSize[1] -3.3])
   rotate([-90, -90, 0])
   rotate([0, 10, 0])
     flare();
