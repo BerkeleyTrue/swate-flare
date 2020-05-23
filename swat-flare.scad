@@ -122,14 +122,14 @@ module flare() {
 boltMountThick = 4;
 bolthole=5/2;
 boltsupport=2/2;
-flareMountY = 11;
+flareMountY = 2;
 bcp = 60;
 
 module swatMount() {
   bOffset=4.7;
   difference() {
     chainedHull() {
-      // bolt hole
+      // bolt mount
       cylinder(r=bolthole+boltsupport, h=boltMountThick);
 
       // box offset
@@ -154,7 +154,7 @@ module swatMount() {
         }
 
       // flare mount face
-      translate([(bcp/2)-(flareBaseSize[1]/2), flareMountY - 2, flareBaseSize[0] + 5])
+      translate([(bcp/2)-(flareBaseSize[1]/2), flareMountY, flareBaseSize[0] + 15])
         rotate([90, 90, 0])
         rotate([0, 10, 0])
         linear_extrude(4) {
@@ -181,7 +181,7 @@ module swatMount() {
       translate([bcp-bOffset, 0, 0])
         ccube([2, bolthole*2+boltsupport*2,, boltMountThick]);
 
-      // bolt hole
+      // bolt mount
       translate([bcp, 0, 0])
         cylinder(r=bolthole+boltsupport, h=boltMountThick);
     }
@@ -198,7 +198,7 @@ module swatMount() {
 union() {
   swatMount();
 
-  translate([(bcp/2)-(flareBaseSize[0]/2)+1.7, flareMountY, flareBaseSize[1] -3.3])
+  translate([(bcp/2)-(flareBaseSize[0]/2)+1.7, flareMountY + 2, flareBaseSize[1] + 6.5])
   rotate([-90, -90, 0])
   rotate([0, 10, 0])
     flare();
