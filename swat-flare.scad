@@ -126,7 +126,7 @@ flareMountY = 2;
 bcp = 60;
 
 module swatMount() {
-  bOffset=4.7;
+  bOffset=6;
   difference() {
     chainedHull() {
       // bolt mount
@@ -145,8 +145,9 @@ module swatMount() {
           sphere(chamber);
         }
 
+      tabYOffset = -3;
       // tab clearance
-      translate([bOffset+chamber*2+8, 0, chamber/2])
+      translate([bOffset+chamber*2+8, tabYOffset, chamber/2])
         rotate([0, 0, 15])
         minkowski() {
           ccube([0.1, 5, 8]);
@@ -154,7 +155,7 @@ module swatMount() {
         }
 
       // flare mount face
-      translate([(bcp/2)-(flareBaseSize[1]/2), flareMountY, flareBaseSize[0] + 15])
+      translate([(bcp/2)-(flareBaseSize[1]/2) - 0.09, flareMountY, flareBaseSize[0] + 14.8])
         rotate([90, 90, 0])
         rotate([0, 10, 0])
         linear_extrude(4) {
@@ -162,7 +163,7 @@ module swatMount() {
         }
 
       // tab clearance
-      translate([bcp-bOffset-chamber*2-8, 0, chamber/2])
+      translate([bcp-bOffset-chamber*2-8, tabYOffset, chamber/2])
         rotate([0, 0, -15])
         minkowski() {
           ccube([0.1, 5, 8]);
