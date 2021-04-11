@@ -104,11 +104,11 @@ module flareBaseShape(chamfer = 0.6) {
   difference() {
     square(flareBaseSize - [chamfer, chamfer]);
 
-    translate([-0.1, 2])
-      square([3.1, 4.8]);
+    /* translate([-0.1, 2]) */
+    /*   square([3.1, 4.8]); */
 
-    translate([8.9, 2])
-      square([3.1, 4.8]);
+    /* translate([8.9, 2]) */
+    /*   square([3.1, 4.8]); */
   }
 }
 // base
