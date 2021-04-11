@@ -17,28 +17,40 @@ module ccube(size) {
     cube(size);
 }
 
+spineLength = 11.8;
 module spine() {
   hull() {
     sphere(0.7);
-    translate([11.8, 0, 0]) sphere(0.7);
+    translate([spineLength, 0, 0]) sphere(0.7);
   }
 }
 
+flareMountHeight = 16;
+flareMountWidth = 12.5;
+flareMountThickness = 2;
+
+tabExtrusionWidth = 5.5;
+tabExtrusionHeight = 10.3;
+cutOutThickness = 1.68;
 // flare mount
 module flareMount() {
   union() {
     chamfer = 0.5;
     minkowski() {
       // main platform
-      linear_extrude(2.25 - chamfer) {
+      linear_extrude(flareMountThickness - chamfer) {
         difference() {
           union() {
-            square([16.63 - chamfer, 12.5 - chamfer]);
-            translate([5.25, 10]) square([5.5 , 10.3]);
+            square([flareMountHeight - chamfer, flareMountWidth - chamfer]);
+            // tab extrusion
+            translate([(flareMountHeight - tabExtrusionWidth) / 2, 10])
+              square([tabExtrusionWidth, tabExtrusionHeight]);
           }
           // cut outs
-          translate([3.57, 10]) square([1.68, 2.75]);
-          translate([10.75, 10]) square([1.68, 2.75]);
+          translate([((flareMountHeight - tabExtrusionWidth) / 2) - cutOutThickness, 10])
+            square([cutOutThickness, 2.75]);
+          translate([(flareMountHeight + tabExtrusionWidth) / 2, 10])
+            square([cutOutThickness, 2.75]);
         }
       }
       // camfer
@@ -46,8 +58,10 @@ module flareMount() {
     }
 
     // spines
-    translate([2.25, 1.75, 2.25 - chamfer]) spine();
-    translate([2.25, 8.80, 2.25 - chamfer]) spine();
+    translate([(flareMountHeight - spineLength) / 2, 1.75, flareMountThickness - chamfer])
+      spine();
+    translate([(flareMountHeight - spineLength) / 2, 8.80, flareMountThickness - chamfer])
+      spine();
 
     /* tab claw */
     translate([10.70, 15.5, 2]) rotate([0, -90, 0])
@@ -119,11 +133,11 @@ module flare() {
   }
 }
 
-boltMountThick = 4;
-bolthole=5/2;
-boltsupport=2/2;
-flareMountY = 2;
-bcp = 60;
+boltMountThick = 4; // bolt hole thickeness in the axial direction
+bolthole=5.6 / 2; // bolt hole radius
+boltsupport=3/2; // bolt hole mount thickness
+flareMountY = 2; // how far the flare mount is back from the swat mount holes
+bcp = 60; // distance between bolt hole centers
 
 module swatMount() {
   bOffset=6;
